@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downsizing Retirement Planner - On My Terms</title>
+<meta name="description" content="An easy, calm downsizing planner for retirement. Big buttons, clear words, one room at a time. Decide what to keep, gift, sell or donate - on your own terms.">
+<style>
+:root{
+  --bg:#FBF9FE;--surface:#FFFFFF;--soft:#F3EEFA;--lilac:#E6DCF4;--line:#CFC3E0;
+  --accent:#6A4C96;--accent-dk:#523877;--text:#241D2E;--muted:#4A4157;
+  --keep:#3F6E5C;--gift:#9C5574;--sell:#7A5C1F;--donate:#3F5F92;--recycle:#56653A;--unsure:#6E6680;
+  --radius:16px;--shadow:0 2px 10px rgba(90,70,130,.08);
+}
+:root[data-theme="dark"]{
+  --bg:#1D1924;--surface:#27222F;--soft:#2F2939;--lilac:#3A3247;--line:#54496A;
+  --accent:#C2ADE6;--accent-dk:#DCCDF5;--text:#F3EFF8;--muted:#CFC7DB;--shadow:none;
+}
+html{font-size:20px;-webkit-text-size-adjust:100%}
+html[data-size="1"]{font-size:23px}
+html[data-size="2"]{font-size:26px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:1rem/1.6 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:normal;margin:0 0 .4em;line-height:1.25}
+h2{font-size:1.5rem}h3{font-size:1.2rem}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:4px solid var(--accent);outline-offset:3px}
+
+/* Header */
+header{background:var(--soft);border-bottom:2px solid var(--line)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 12px;flex-wrap:wrap}
+.brand h1{font-size:1.45rem;color:var(--accent-dk);margin:0}
+.brand p{margin:0;color:var(--muted);font-style:italic;font-family:Georgia,serif}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;padding:4px 0 14px}
+nav button{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 6px;min-height:64px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.9rem;font-weight:600;color:var(--muted)}
+nav button .ic{font-size:1.35rem;line-height:1}
+nav button[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] nav button[aria-current="page"]{color:#1D1924}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;border:2px solid var(--accent);background:var(--accent);color:#fff;padding:10px 22px;border-radius:14px;cursor:pointer;font-weight:700;text-align:center}
+:root[data-theme="dark"] .btn{color:#1D1924}
+.btn:hover{background:var(--accent-dk);border-color:var(--accent-dk)}
+.btn.ghost{background:var(--surface);color:var(--accent-dk)}
+.btn.ghost:hover{background:var(--lilac)}
+.btn.small{min-height:48px;padding:8px 16px;font-size:.9rem}
+.btn.wide{width:100%}
+.btn.danger{background:var(--surface);color:#9A3A3A;border-color:#C99}
+.linkbtn{background:none;border:0;padding:10px 4px;min-height:48px;color:var(--accent-dk);text-decoration:underline;cursor:pointer;font-size:.9rem}
+
+main{padding:22px 0 70px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.card.hero{background:var(--soft);border-color:var(--accent)}
+.lead{color:var(--muted);max-width:640px;margin-top:0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--soft);border-radius:14px;padding:14px 6px;text-align:center}
+.stat b{display:block;font-size:2rem;font-family:Georgia,serif;color:var(--accent-dk);line-height:1.1}
+.stat span{color:var(--muted);font-size:.9rem}
+.bar{height:18px;background:var(--lilac);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;min-width:0;transition:width .3s}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:6px}
+.legend div{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:var(--soft)}
+.legend b{margin-left:auto}
+
+/* Rooms */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.seg button,.choice button{min-height:56px;border:2px solid var(--line);background:var(--surface);border-radius:14px;cursor:pointer;font-weight:600;padding:8px}
+.seg button[aria-pressed="true"],.choice button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],:root[data-theme="dark"] .choice button[aria-pressed="true"]{color:#1D1924}
+.room-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.room-tile{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:16px 18px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:96px}
+.room-tile:hover{border-color:var(--accent)}
+.room-tile .name{font-weight:700;font-size:1.05rem}
+.room-tile.done{background:var(--soft)}
+.tag{display:inline-block;font-size:.85rem;font-weight:600;padding:3px 12px;border-radius:99px;background:var(--lilac);color:var(--accent-dk)}
+.tag.done{background:#DCEDE5;color:#245241}
+.tag.prog{background:#F4E9CF;color:#5F4610}
+:root[data-theme="dark"] .tag.done{background:#2C4238;color:#C8EBDA}
+:root[data-theme="dark"] .tag.prog{background:#4A3F28;color:#F3E2B8}
+
+.addrow{display:flex;gap:10px;flex-wrap:wrap}
+.addrow input{flex:1 1 220px}
+input[type=text],input[type=date],input:not([type]){width:100%;min-height:56px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:var(--surface)}
+input::placeholder{color:#7A7088}
+label.lbl{display:block;font-weight:700;margin-bottom:6px}
+.field{margin-bottom:18px}
+.hint{color:var(--muted);font-size:.9rem;margin-top:4px}
+
+/* Item card */
+.item{border:2px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;background:var(--surface)}
+.item-top{display:flex;align-items:flex-start;gap:10px}
+.item-top .iname{flex:1;font-weight:700;font-size:1.1rem;border:0;border-bottom:2px dashed transparent;border-radius:0;padding:4px 0;min-height:0;background:transparent}
+.item-top .iname:focus{border-bottom-color:var(--accent);outline:none}
+.ask{margin:10px 0 8px;font-weight:600;color:var(--muted)}
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.decide button{min-height:64px;border:2px solid var(--line);background:var(--surface);border-radius:14px;cursor:pointer;font-weight:700;font-size:.9rem;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.2}
+.decide button .ic{font-size:1.3rem}
+.decide button[aria-pressed="true"]{color:#fff;border-color:transparent}
+.follow{margin-top:12px}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+details.story{margin-top:10px}
+details.story summary{cursor:pointer;color:var(--accent-dk);font-weight:600;min-height:44px;display:flex;align-items:center}
+.chosen{font-weight:700}
+.print-only{display:none}
+.tool-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.tool{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:18px;cursor:pointer;display:flex;gap:14px;align-items:flex-start;min-height:100px}
+.tool:hover{border-color:var(--accent)}
+.tool .ic{font-size:2rem;line-height:1}
+.tool b{display:block;font-size:1.05rem}
+.task{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;cursor:pointer;min-height:64px}
+.task .box{flex:none;width:34px;height:34px;border:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.task[aria-pressed="true"]{background:var(--soft)}
+.task[aria-pressed="true"] .box{background:var(--accent)}
+.task[aria-pressed="true"] .tt{text-decoration:line-through;color:var(--muted)}
+.phase{margin-top:26px}
+.phase h3{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.phase h3 small{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.85rem;color:var(--muted)}
+.tip{background:var(--soft);border-left:6px solid var(--accent);border-radius:14px;padding:14px 16px;margin:16px 0}
+.tip p{margin:.3em 0}
+.src{font-size:.85rem;color:var(--muted)}
+.inrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.toggles button{min-height:56px;border:2px solid var(--line);background:var(--surface);border-radius:14px;cursor:pointer;font-weight:700;padding:6px}
+.toggles button[aria-pressed="true"]{background:var(--keep);border-color:var(--keep);color:#fff}
+.fitok{color:var(--keep);font-weight:700}.fitno{color:#9A3A3A;font-weight:700}
+:root[data-theme="dark"] .fitok{color:#9FD9C1}:root[data-theme="dark"] .fitno{color:#F0A5A5}
+.total{font-size:1.2rem}
+a.btn{text-decoration:none}
+
+.help{background:var(--soft);border-left:6px solid var(--accent);border-radius:14px;padding:4px 16px;margin:16px 0}
+.help summary{cursor:pointer;font-weight:700;min-height:56px;display:flex;align-items:center}
+.help ul{margin:0 0 12px;padding-left:22px}
+.help li{margin-bottom:6px}
+
+.row{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-top:2px solid var(--line);flex-wrap:wrap}
+.row:first-child{border-top:0}
+.empty{padding:20px;text-align:center;color:var(--muted);background:var(--soft);border-radius:14px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;flex:none}
+
+.ask-bg{position:fixed;inset:0;background:rgba(36,29,46,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.ask-bg[hidden]{display:none}
+.ask-box{background:var(--surface);border-radius:18px;padding:24px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.ask-box p{font-size:1.1rem;margin-top:0}
+.notice{background:#FFF6DD;color:#4A3A0A;border:2px solid #E7CF8A;border-radius:14px;padding:12px 16px;margin:0 0 14px}
+:root[data-theme="dark"] .notice{background:#4A3F28;color:#F3E2B8;border-color:#7A6638}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--accent-dk);color:#fff;padding:12px 18px;border-radius:16px;display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9;max-width:92vw;font-weight:600}
+:root[data-theme="dark"] .toast{color:#1D1924}
+.toast.show{opacity:1;pointer-events:auto}
+.toast button{background:#fff;color:var(--accent-dk);border:0;border-radius:10px;min-height:44px;padding:6px 14px;font-weight:700;cursor:pointer}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 16px;border-top:2px solid var(--line)}
+
+@media (max-width:420px){
+  .decide{grid-template-columns:repeat(2,1fr)}
+  .seg button{font-size:.85rem}
+}
+@media print{
+  header nav,.head-actions,.no-print,.toast,.decide,.quick,.addrow,.seg,.toggles,.btn,.linkbtn,.choice,.follow,.ask,#tlDate,.notice,.ask-bg,details.help,details.story:not([open]),details.story summary{display:none!important}
+  .print-only{display:block!important}
+  body{background:#fff;color:#000}
+  .card,.item{box-shadow:none;border:1px solid #999}
+  .item,.task,.row,.stat,.legend div,.tip,#p-home .card,#p-set .card{break-inside:avoid}
+  details.story[open]{display:flex;gap:6px;align-items:baseline}
+  details.story[open]::before{content:"Story:";font-weight:700}
+  input{border:0!important;padding:0!important;min-height:0!important;background:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="head">
+      <div class="brand">
+        <h1>Downsizing Retirement Planner</h1>
+        <p id="subtitle">On my terms</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn ghost small" data-act="size" id="sizeBtn" aria-label="Change text size">Text size: Large</button>
+        <button class="btn ghost small" data-act="print">Print this page</button>
+      </div>
+    </div>
+    <nav aria-label="Planner sections" id="nav"></nav>
+    <div class="notice" id="noSave" hidden><b>This preview cannot save your work.</b> To keep what you add, open the file in Chrome or Safari on your phone or computer.</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel" id="p-home"></section>
+  <section class="panel" id="p-rooms"></section>
+  <section class="panel" id="p-unsure"></section>
+  <section class="panel" id="p-lists"></section>
+  <section class="panel" id="p-plan"></section>
+  <section class="panel" id="p-set"></section>
+</main>
+
+<footer>Downsizing Retirement Planner - On My Terms &middot; Part of the Life &amp; Legacy Collection by The Snag Tag<br>For personal planning only. It is not legal, financial or tax advice.</footer>
+<div class="ask-bg" id="askBg" hidden><div class="ask-box" role="alertdialog" aria-modal="true" aria-labelledby="askMsg"><p id="askMsg"></p><div class="grid g2"><button class="btn" id="askYes">Yes</button><button class="btn ghost" id="askNo">No, go back</button></div></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastUndo" hidden>Undo</button></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="ddrp_v1";
+var DECS=[
+  {k:"keep",l:"Keep",ic:"\u{1F3E0}",c:"var(--keep)",ask:"Where will it go in your next home?",col:"Where it goes"},
+  {k:"gift",l:"Give to family",ic:"\u{1F381}",c:"var(--gift)",ask:"Who is it for?",col:"For"},
+  {k:"sell",l:"Sell",ic:"\u{1F3F7}️",c:"var(--sell)",ask:"Where will you sell it, and for how much?",col:"Where / price"},
+  {k:"donate",l:"Donate",ic:"\u{1F49D}",c:"var(--donate)",ask:"Which charity or person?",col:"To"},
+  {k:"recycle",l:"Recycle or throw away",ic:"♻️",c:"var(--recycle)",ask:"Any note (e.g. electronics drop-off)?",col:"Note"},
+  {k:"undecided",l:"Not sure yet",ic:"\u{1F914}",c:"var(--unsure)",ask:"",col:"Decide by"}
+];
+var ROOMS=[
+  ["Hallway and entrance","coats, shoes, umbrellas, keys, post"],
+  ["Linen cupboard","sheets, towels, blankets, spare pillows"],
+  ["Bathrooms","toiletries, old medicines, towels, cosmetics"],
+  ["Laundry","cleaning products, baskets, ironing kit"],
+  ["Kitchen","crockery, pots, gadgets, glassware, cutlery"],
+  ["Pantry","tins, spices, appliances, containers"],
+  ["Dining room","table, chairs, serving ware, linens"],
+  ["Living room","furniture, decor, rugs, electronics"],
+  ["Main bedroom","furniture, bedding, bedside items"],
+  ["Clothes and shoes","everyday, formal, seasonal, accessories"],
+  ["Guest bedroom","furniture, bedding, stored extras"],
+  ["Children's old rooms","childhood items, trophies, school work"],
+  ["Home office","desk, files, stationery, tech, cables"],
+  ["Books, music and films","books, records, CDs, DVDs, magazines"],
+  ["Hobbies and crafts","supplies, equipment, unfinished projects"],
+  ["Seasonal and holiday decor","decorations, lights, gift wrap"],
+  ["Garage","tools, car items, sports gear, paint"],
+  ["Garden and shed","garden tools, pots, outdoor furniture"],
+  ["Attic, loft or storage","boxes, luggage, stored furniture"],
+  ["Basement or storage unit","overflow, items kept for others"],
+  ["Collections","china, stamps, coins, figurines, art"],
+  ["Paperwork","bills, statements, manuals, old records"],
+  ["Photos and keepsakes","albums, letters, cards, mementos"]
+];
+var HELP=[
+  "Have I used or enjoyed this in the past year?",
+  "Will it fit, and have a real job, in my next home?",
+  "Would the person I picture having it truly want it? Have I asked them?",
+  "Is the memory in the object, or could a photo hold it just as well?",
+  "If I lost it tomorrow, would I buy it again?",
+  "Am I keeping it for me, or because I feel guilty?"
+];
+var TABS=[["home","\u{1F3E1}","Home"],["rooms","\u{1F6AA}","Rooms"],["unsure","\u{1F914}","Not sure yet"],["lists","\u{1F4CB}","My lists"],["plan","\u{1F5D3}\uFE0F","My plan"],["set","⚙️","Settings"]];
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function $(id){return document.getElementById(id)}
+function fresh(){return {v:2,name:"",mode:"moving",date:"",home:"",theme:"light",size:0,
+  rooms:ROOMS.map(function(r){return {id:uid(),name:r[0],hint:r[1],status:"not",custom:false,items:[]}})}}
+
+var S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+if(!S||!Array.isArray(S.rooms))S=fresh();
+function fill(){if(S.size==null)S.size=0;if(!S.tl)S.tl={};if(!Array.isArray(S.fit))S.fit=[];if(!Array.isArray(S.helpers))S.helpers=[];if(!S.unit)S.unit="cm";if(S.cur==null)S.cur="";if(!S.gm||typeof S.gm!=="object")S.gm={start:"",done:{}};if(!S.gm.done)S.gm.done={};}
+fill();
+
+var canSave=true;try{localStorage.setItem(KEY+"_t","1");localStorage.removeItem(KEY+"_t")}catch(e){canSave=false}
+function save(){if(!canSave)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){canSave=false;render()}}
+var toastT,undoFn=null;
+function toast(m,undo){
+  $("toastMsg").textContent=m;undoFn=undo||null;$("toastUndo").hidden=!undo;
+  $("toast").classList.add("show");clearTimeout(toastT);
+  toastT=setTimeout(function(){$("toast").classList.remove("show");undoFn=null},undo?6000:2500);
+}
+var askFn=null;
+function ask(msg,yes,fn){$("askMsg").textContent=msg;$("askYes").textContent=yes;askFn=fn;$("askBg").hidden=false;$("askNo").focus()}
+$("askNo").onclick=function(){$("askBg").hidden=true;askFn=null};
+$("askYes").onclick=function(){$("askBg").hidden=true;var f=askFn;askFn=null;if(f)f()};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("askBg").hidden){$("askBg").hidden=true;askFn=null}});
+$("toastUndo").onclick=function(){if(undoFn){undoFn();undoFn=null}$("toast").classList.remove("show")};
+
+function room(id){for(var i=0;i<S.rooms.length;i++)if(S.rooms[i].id===id)return S.rooms[i]}
+function allItems(){var a=[];S.rooms.forEach(function(r){r.items.forEach(function(it){a.push({it:it,room:r})})});return a}
+function findItem(id){var f=null;allItems().some(function(x){if(x.it.id===id){f=x;return true}});return f}
+function decOf(k){for(var i=0;i<DECS.length;i++)if(DECS[i].k===k)return DECS[i];return null}
+function counts(){var c={};DECS.forEach(function(d){c[d.k]=0});allItems().forEach(function(x){if(c[x.it.dec]!=null)c[x.it.dec]++});return c}
+function fmtDate(d){if(!d)return"";var p=d.split("-");return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})}
+function daysTo(d){if(!d)return null;var p=d.split("-");var t=new Date(+p[0],+p[1]-1,+p[2]),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/864e5)}
+function addDays(n){var d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function tag(s){return s==="done"?'<span class="tag done">✓ Finished</span>':s==="prog"?'<span class="tag prog">Started</span>':'<span class="tag">Not started</span>'}
+function plural(n,w){return n+" "+w+(n===1?"":"s")}
+
+/* Navigation */
+var tab="home",openRoom=null,planView=null,planMonth=null,helperRole="Family",roomFilter="all",listDec="gift";
+try{tab=sessionStorage.getItem(KEY+"_tab")||"home"}catch(e){}
+$("nav").innerHTML=TABS.map(function(t){return '<button data-act="tab" data-v="'+t[0]+'"><span class="ic" aria-hidden="true">'+t[1]+'</span>'+t[2]+'</button>'}).join("");
+function go(t){tab=t;try{sessionStorage.setItem(KEY+"_tab",t)}catch(e){}render();window.scrollTo(0,0)}
+
+/* Render */
+function render(){
+  document.documentElement.setAttribute("data-theme",S.theme);
+  $("noSave").hidden=canSave;
+  document.documentElement.setAttribute("data-size",S.size);
+  $("sizeBtn").textContent="Text size: "+["Large","Larger","Largest"][S.size||0];
+  $("subtitle").textContent=S.name||"On my terms";
+  [].forEach.call($("nav").children,function(b){b.setAttribute("aria-current",b.dataset.v===tab?"page":"false")});
+  TABS.forEach(function(t){$("p-"+t[0]).classList.toggle("active",t[0]===tab)});
+  ({home:rHome,rooms:rRooms,unsure:rUnsure,lists:rLists,plan:rPlan,set:rSet})[tab]();
+}
+
+function nextRoom(){var n=null;S.rooms.some(function(r){if(r.status==="prog"){n=r;return true}});if(!n)S.rooms.some(function(r){if(r.status==="not"){n=r;return true}});return n}
+
+function rHome(){
+  var total=S.rooms.length,done=S.rooms.filter(function(r){return r.status==="done"}).length;
+  var pct=total?Math.round(done/total*100):0,c=counts(),items=allItems().length,nx=nextRoom(),dd=daysTo(S.date);
+  var greet=S.mode==="staying"?"Simplifying, at your own pace":S.mode==="exploring"?"Exploring your next chapter":"Planning your move, your way";
+  var unsure=allItems().filter(function(x){return x.it.dec==="undecided"}),ready=unsure.filter(function(x){var d=daysTo(x.it.review);return d!==null&&d<=0}).length;
+  var decided=items-c.undecided-allItems().filter(function(x){return !x.it.dec}).length;
+  $("p-home").innerHTML=
+   '<h2>'+greet+'</h2><p class="lead">One room, one decision at a time. Nothing here is urgent. You choose the pace, and you choose what stays with you.</p>'+
+   '<div class="card hero"><h3>Your next step</h3>'+(nx?
+     '<p style="margin:0 0 4px;font-size:1.15rem"><b>'+esc(nx.name)+'</b></p><p class="muted" style="margin-top:0">'+esc(nx.hint)+'</p><button class="btn wide" data-act="open" data-v="'+nx.id+'">'+(nx.status==="prog"?"Carry on with this room":"Start this room")+' →</button>'
+     :'<p>Every room is finished. That is a real achievement. Well done.</p>')+'</div>'+
+   (!(S.date&&S.mode==="moving")?(function(){var i=gmNow(),g=GM[i],d=gmDone(i);return '<div class="card"><h3>\u{1F331} This month in your gentle plan</h3><p style="margin-top:0"><b>'+g.t+'</b><br><span class="muted">'+g.r.join(", ")+' &middot; '+d+' of '+g.k.length+' done</span></p><button class="btn ghost wide" data-act="opengm">Open this month</button></div>'})():'')+
+   (S.date&&S.mode==="moving"&&nextTask()?(function(n){return '<div class="card"><h3>\u{1F4C5} Next job on your moving timeline</h3><p style="margin-top:0"><b>'+n.k[1]+'</b><br><span class="muted">'+n.p.t+(n.p.d>0?", by "+dueOn(n.p.d):"")+'</span></p><button class="btn ghost wide" data-act="opentl">Open my timeline</button></div>'})(nextTask()):'')+
+   (ready?'<div class="card"><h3>\u{1F914} '+plural(ready,"item")+' ready to decide</h3><p class="muted">You asked to come back to '+(ready===1?"this":"these")+' today.</p><button class="btn ghost wide" data-act="tab" data-v="unsure">Look at them now</button></div>':'')+
+   '<div class="card"><h3>How far you have come</h3><div class="bar" role="progressbar" aria-label="Rooms finished" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><i style="width:'+pct+'%"></i></div>'+
+   '<p style="margin-top:0"><b>'+done+' of '+total+'</b> rooms finished</p>'+
+   '<div class="stats"><div class="stat"><b>'+decided+'</b><span>things decided</span></div><div class="stat"><b>'+c.undecided+'</b><span>not sure yet</span></div>'+
+   (dd!==null?'<div class="stat"><b>'+Math.max(dd,0)+'</b><span>'+(dd>=0?"days to your date":"your date has passed")+'</span></div>':'<div class="stat"><b>'+(total-done)+'</b><span>rooms to go</span></div>')+'</div></div>'+
+   (decided?'<div class="card"><h3>Your choices so far</h3><div class="legend">'+DECS.slice(0,5).map(function(d){return '<div><span class="dot" style="background:'+d.c+'"></span>'+d.l+'<b>'+c[d.k]+'</b></div>'}).join("")+'</div></div>':'');
+}
+
+function rRooms(){
+  if(openRoom&&room(openRoom))return rRoom(room(openRoom));
+  openRoom=null;
+  var list=S.rooms.filter(function(r){return roomFilter==="all"||(roomFilter==="todo"?r.status!=="done":r.status==="done")});
+  $("p-rooms").innerHTML='<h2>Room by room</h2><p class="lead">Tap a room to start. Small spaces first is easiest. Leave photos and keepsakes until last.</p>'+
+   '<div class="seg" role="group" aria-label="Show rooms">'+[["all","All rooms"],["todo","Still to do"],["done","Finished"]].map(function(f){return '<button data-act="filter" data-v="'+f[0]+'" aria-pressed="'+(roomFilter===f[0])+'">'+f[1]+'</button>'}).join("")+'</div>'+
+   '<div class="room-list">'+(list.map(function(r){return '<button class="room-tile'+(r.status==="done"?" done":"")+'" data-act="open" data-v="'+r.id+'"><span class="name">'+esc(r.name)+'</span><span class="muted" style="font-size:.9rem">'+esc(r.hint||"Your own room")+'</span><span>'+tag(r.status)+(r.items.length?' <span class="muted" style="font-size:.9rem">'+plural(r.items.length,"thing")+'</span>':'')+'</span></button>'}).join("")||'<div class="empty">No rooms here yet.</div>')+'</div>'+
+   '<div class="card no-print" style="margin-top:20px"><h3>Missing a room?</h3><div role="group" class="addrow" data-form="room"><label class="sr" for="newRoom">Room name</label><input id="newRoom" type="text" placeholder="e.g. Sewing room, Caravan"><button class="btn" type="button" data-act="submit">Add room</button></div></div>';
+}
+
+function itemCard(it){
+  var d=decOf(it.dec);
+  var follow="";
+  if(it.dec==="undecided"){
+    follow='<div class="follow"><label class="lbl">When would you like to decide?</label>'+
+      (it.review?'<p style="margin:0">By <b>'+fmtDate(it.review)+'</b></p>':'')+
+      '<div class="quick">'+[[14,"In 2 weeks"],[30,"In 1 month"],[90,"In 3 months"]].map(function(q){return '<button class="btn ghost small" data-act="review" data-id="'+it.id+'" data-v="'+q[0]+'">'+q[1]+'</button>'}).join("")+'</div></div>';
+  }else if(d){
+    follow='<div class="follow"><label class="lbl" for="w-'+it.id+'">'+d.ask+'</label><input type="text" id="w-'+it.id+'" data-f="who" data-id="'+it.id+'" value="'+esc(it.who)+'" placeholder="Optional"></div>';
+  }
+  return '<div class="item">'+
+   '<div class="item-top"><label class="sr" for="n-'+it.id+'">Item name</label><input class="iname" id="n-'+it.id+'" data-f="name" data-id="'+it.id+'" value="'+esc(it.name)+'"><button class="linkbtn no-print" data-act="del" data-id="'+it.id+'" aria-label="Remove '+esc(it.name)+'">Remove</button></div>'+
+   (d?'<p class="print-only chosen">'+d.l+(it.who?": "+esc(it.who):"")+(it.dec==="undecided"&&it.review?" (by "+fmtDate(it.review)+")":"")+'</p>':'')+
+   '<p class="ask no-print">'+(d?"Your choice:":"What would you like to do with it?")+'</p>'+
+   '<div class="decide" role="group" aria-label="Choose what to do with '+esc(it.name)+'">'+DECS.map(function(x){var on=it.dec===x.k;return '<button data-act="dec" data-id="'+it.id+'" data-v="'+x.k+'" aria-pressed="'+on+'"'+(on?' style="background:'+x.c+'"':'')+'><span class="ic" aria-hidden="true">'+x.ic+'</span>'+x.l+'</button>'}).join("")+'</div>'+
+   follow+
+   '<details class="story"'+(it.note?" open":"")+'><summary>'+(it.note?"The story behind it":"+ Add the story behind it")+'</summary><label class="sr" for="s-'+it.id+'">The story behind it</label><input type="text" id="s-'+it.id+'" data-f="note" data-id="'+it.id+'" value="'+esc(it.note)+'" placeholder="e.g. A wedding gift from my mother"></details>'+
+  '</div>';
+}
+
+function rRoom(r){
+  var items=r.items.slice().reverse();
+  $("p-rooms").innerHTML='<button class="btn ghost small no-print" data-act="back">← Back to all rooms</button>'+
+   '<div class="card" style="margin-top:14px"><h2 style="margin-bottom:4px">'+esc(r.name)+'</h2><p class="muted" style="margin-top:0">'+esc(r.hint||"")+'</p>'+
+   '<div role="group" class="addrow no-print" data-form="item"><label class="lbl" for="newItem" style="width:100%;margin:0">Add something from this room</label><input id="newItem" type="text" placeholder="e.g. Dinner set"><button class="btn" type="button" data-act="submit">Add</button></div>'+
+   '<details class="help no-print"><summary>Need help deciding? Tap here</summary><ul>'+HELP.map(function(h){return '<li>'+h+'</li>'}).join("")+'</ul></details>'+
+   (items.length?items.map(itemCard).join(""):'<div class="empty" style="margin-top:14px">Nothing added yet. Pick up the first thing you see and type its name above.</div>')+
+   '</div>'+
+   '<div class="card no-print">'+(r.status==="done"?'<p style="margin-top:0"><b>✓ You marked this room as finished.</b></p><button class="btn ghost wide" data-act="status" data-v="prog">I need to work on it again</button>':
+     '<p style="margin-top:0">Happy with this room?</p><button class="btn wide" data-act="status" data-v="done">✓ This room is finished</button>')+
+   (r.custom?'<p style="margin-bottom:0"><button class="linkbtn" data-act="delroom" data-v="'+r.id+'">Remove this room</button></p>':'')+'</div>';
+}
+
+function rUnsure(){
+  var u=allItems().filter(function(x){return x.it.dec==="undecided"});
+  u.sort(function(a,b){return (a.it.review||"9999")<(b.it.review||"9999")?-1:1});
+  $("p-unsure").innerHTML='<h2>Not sure yet</h2><p class="lead">It is fine not to know yet. Come back with fresh eyes. If you have not missed something by the date you chose, that is often your answer.</p>'+
+   (u.length?u.map(function(x){var d=daysTo(x.it.review);
+     return '<div class="card"><p style="margin:0;font-size:1.1rem"><b>'+esc(x.it.name)+'</b></p><p class="muted" style="margin:2px 0 10px">'+esc(x.room.name)+(x.it.review?' &middot; decide by '+fmtDate(x.it.review):'')+(d!==null&&d<=0?' &middot; <b>ready now</b>':'')+'</p>'+
+     '<div class="decide" role="group" aria-label="Decide now">'+DECS.slice(0,5).map(function(dc){return '<button data-act="dec" data-id="'+x.it.id+'" data-v="'+dc.k+'" aria-pressed="false"><span class="ic" aria-hidden="true">'+dc.ic+'</span>'+dc.l+'</button>'}).join("")+'</div></div>'}).join("")
+   :'<div class="empty">Nothing waiting here. When you are unsure about something, tap "Not sure yet" and it will wait here for you.</div>');
+}
+
+function rLists(){
+  var d=decOf(listDec),rows=allItems().filter(function(x){return x.it.dec===listDec});
+  $("p-lists").innerHTML='<h2>My lists</h2><p class="lead">Everything you have decided, in simple lists. Print one and hand it to family, a buyer or a charity.</p>'+
+   '<div class="choice grid g3 no-print" role="group" aria-label="Choose a list" style="margin-bottom:16px">'+DECS.map(function(x){return '<button data-act="list" data-v="'+x.k+'" aria-pressed="'+(listDec===x.k)+'">'+x.ic+' '+x.l+'</button>'}).join("")+'</div>'+
+   '<div class="card"><h3><span class="dot" style="background:'+d.c+';margin-right:8px"></span>'+d.l+' ('+rows.length+')</h3>'+
+   (rows.length?rows.map(function(x){var extra=listDec==="undecided"?(x.it.review?"Decide by "+fmtDate(x.it.review):""):x.it.who;
+     return '<div class="row"><div><b>'+esc(x.it.name)+'</b><div class="muted" style="font-size:.9rem">'+esc(x.room.name)+(x.it.note?' &middot; '+esc(x.it.note):'')+'</div></div>'+(extra?'<div>'+(listDec!=="undecided"?'<span class="muted">'+d.col+':</span> ':'')+esc(extra)+'</div>':'')+'</div>'}).join("")
+   :'<div class="empty">Nothing on this list yet.</div>')+
+   (rows.length?'<button class="btn ghost wide no-print" style="margin-top:14px" data-act="print">Print this list</button>':'')+'</div>';
+}
+
+function rSet(){
+  $("p-set").innerHTML='<h2>Settings</h2>'+
+   '<div class="card"><h3>Make it yours</h3>'+
+   '<div class="field"><label class="lbl" for="sName">Name your planner</label><input id="sName" type="text" data-s="name" value="'+esc(S.name)+'" placeholder="e.g. Our Next Chapter"><div class="hint">This shows at the top and on print-outs.</div></div>'+
+   '<div class="field"><span class="lbl">Where are you right now?</span><div class="choice grid" style="grid-template-columns:1fr">'+[["moving","I am planning a move"],["staying","I am staying, but want less"],["exploring","I am still thinking about it"]].map(function(m){return '<button data-act="mode" data-v="'+m[0]+'" aria-pressed="'+(S.mode===m[0])+'">'+m[1]+'</button>'}).join("")+'</div></div>'+
+   '<div class="field"><label class="lbl" for="sDate">Your target date (you can leave this empty)</label><input id="sDate" type="date" data-s="date" value="'+esc(S.date)+'"><div class="hint">Your moving day, or the day you would like to feel lighter by.</div></div>'+
+   '<div class="field" style="margin-bottom:0"><label class="lbl" for="sHome">Your next home (you can leave this empty)</label><input id="sHome" type="text" data-s="home" value="'+esc(S.home)+'" placeholder="e.g. 2-bedroom flat"></div></div>'+
+   '<div class="card"><h3>Easier to see</h3>'+
+   '<div class="field"><span class="lbl">Text size</span><div class="choice grid g3">'+[[0,"Large"],[1,"Larger"],[2,"Largest"]].map(function(s){return '<button data-act="setsize" data-v="'+s[0]+'" aria-pressed="'+(S.size===s[0])+'">'+s[1]+'</button>'}).join("")+'</div></div>'+
+   '<div class="field" style="margin-bottom:0"><span class="lbl">Colours</span><div class="choice grid g3">'+[["light","Light"],["dark","Dark"]].map(function(t){return '<button data-act="theme" data-v="'+t[0]+'" aria-pressed="'+(S.theme===t[0])+'">'+t[1]+'</button>'}).join("")+'</div></div></div>'+
+   '<div class="card"><h3>Keep your work safe</h3><p class="muted">Your planner saves by itself, on this device only. Nothing is sent anywhere. Now and then, save a copy to keep it extra safe.</p>'+
+   '<div class="grid g2"><button class="btn" data-act="export">Save a copy</button><button class="btn ghost" data-act="import">Bring back a saved copy</button></div><input type="file" id="importFile" accept=".json,application/json" hidden></div>'+
+   '<div class="card"><h3>Start again</h3><p class="muted">This empties the whole planner. Save a copy first if you might want it later.</p><button class="btn danger" data-act="reset">Empty my planner</button></div>';
+}
+
+/* ===== Phase 2: My plan ===== */
+var TL=[
+ {d:84,t:"About 12 weeks before",k:[
+   ["t1","Choose your moving date and add it at the top of this page"],
+   ["t2","Ask at least 3 removal companies for a quote"],
+   ["t3","Start sorting the smallest rooms in this planner"],
+   ["t4","Ask family which things they would truly like to have"]]},
+ {d:56,t:"About 8 weeks before",k:[
+   ["t5","Measure your new home and check what fits (see Will it fit?)"],
+   ["t6","Book your removal company and write down the date and time"],
+   ["t7","Book charity collections for large items"],
+   ["t8","List the things you want to sell"]]},
+ {d:42,t:"About 6 weeks before",k:[
+   ["t9","Put important papers in one folder: ID, will, insurance, medical and bank papers"],
+   ["t10","Arrange help to clean your old home after you leave"]]},
+ {d:28,t:"About 4 weeks before",k:[
+   ["t11","Tell your bank, pension, doctor, dentist and insurers your new address"],
+   ["t12","Arrange post forwarding, if your post office offers it"],
+   ["t13","Get packing boxes - small boxes for heavy things like books"]]},
+ {d:14,t:"About 2 weeks before",k:[
+   ["t14","Hand over gifts to family (see Family gifts)"],
+   ["t15","Start using up food in the freezer and cupboards"],
+   ["t16","Tell your electricity, water, gas and internet suppliers your moving date"]]},
+ {d:7,t:"The week before",k:[
+   ["t17","Collect enough of your medicines to last through the move"],
+   ["t18","Pack a first-night box: medicines, glasses, phone charger, toiletries, bedding, kettle, mugs and important papers"],
+   ["t19","Confirm times with your removal company and helpers"]]},
+ {d:0,t:"Moving day",k:[
+   ["t20","Keep your first-night box, medicines and papers with you, not in the van"],
+   ["t21","Take meter readings and photos of each one"],
+   ["t22","Keep walkways and stairs clear of boxes so nobody trips"],
+   ["t23","Check every room, cupboard and storage space is empty before you leave"]]},
+ {d:-7,t:"After the move",k:[
+   ["t24","Test the smoke alarms in your new home"],
+   ["t25","Find the main water stop tap and the electricity box (fuse box)"],
+   ["t26","Register with a new doctor and dentist if you need to"],
+   ["t27","Unpack the bedroom and kitchen first"]]}
+];
+var TOOLS=[
+ ["gentle","\u{1F331}","Gentle 12-month plan","One small area a month, no rush"],
+ ["timeline","\u{1F4C5}","Moving timeline","A simple checklist, week by week"],
+ ["fit","\u{1F4CF}","Will it fit?","Check your furniture fits your next home"],
+ ["gifts","\u{1F381}","Family gifts","Who gets what, and have you asked them"],
+ ["sales","\u{1F3F7}️","Selling and donating","Prices, what has sold, what has gone"],
+ ["helpers","\u{1F4DE}","My helpers","Phone numbers for everyone helping you"]
+];
+function tlCount(){var n=0,d=0;TL.forEach(function(p){p.k.forEach(function(k){n++;if(S.tl[k[0]])d++})});return [d,n]}
+function money(v){var n=parseFloat(String(v).replace(/[^0-9.]/g,""));return isNaN(n)?0:n}
+function fmtMoney(n){return (S.cur||"")+n.toLocaleString(undefined,{maximumFractionDigits:2})}
+function nextTask(){var f=null;TL.some(function(p){return p.k.some(function(k){if(!S.tl[k[0]]){f={k:k,p:p};return true}})});return f}
+function dueOn(days){if(!S.date)return"";var p=S.date.split("-");var t=new Date(+p[0],+p[1]-1,+p[2]);t.setDate(t.getDate()-days);return t.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})}
+function cmToIn(c){return c/2.54}
+function fmtLen(c){var cm=Math.round(c)+" cm",inch=(Math.round(cmToIn(c)*10)/10)+" in";return S.unit==="in"?inch+" ("+cm+")":cm+" ("+inch+")"}
+function fmtArea(l,w){var m=l*w/10000,ft=m*10.7639;var a=(Math.round(m*10)/10)+" m²",b=Math.round(ft)+" sq ft";return S.unit==="in"?b+" ("+a+")":a+" ("+b+")"}
+function toCm(v){var n=parseFloat(String(v).replace(",","."));if(isNaN(n)||n<=0)return 0;return S.unit==="in"?n*2.54:n}
+function fits(r,pc){return (pc.l<=r.l&&pc.w<=r.w)||(pc.l<=r.w&&pc.w<=r.l)}
+function fitRoom(id){for(var i=0;i<S.fit.length;i++)if(S.fit[i].id===id)return S.fit[i]}
+
+/* ===== Phase 3: Gentle 12-month plan ===== */
+var GM=[
+ {t:"Small and easy",r:["Linen cupboard","Bathrooms"],k:["Take out sheets and towels you no longer use","Throw away old toiletries and make-up","Ask your pharmacy how to get rid of old or unwanted medicines safely where you live. A take-back scheme is the best option where there is one","Enjoy your first tidy cupboard"]},
+ {t:"First impressions",r:["Hallway and entrance","Laundry"],k:["Keep only the coats and shoes you wear","Clear old post and keys you no longer need","Sort cleaning products and keep them in their original bottles","Throw away empty or dried-up bottles"]},
+ {t:"The heart of the home",r:["Kitchen"],k:["Keep the pots, pans and dishes you use every week","Choose one special set to keep or gift","Count mugs and glasses, and keep only what you need","Donate gadgets you have not used in a year"]},
+ {t:"Cupboards and the table",r:["Pantry","Dining room"],k:["Check use-by dates and clear old food","Sort serving dishes and table linen","Ask family about the dining table and chairs","Donate spare containers and appliances"]},
+ {t:"Your wardrobe",r:["Clothes and shoes"],k:["Try on anything you are unsure about","Keep what fits and feels good today","Donate clean clothes and shoes in good condition","Keep one special outfit for each season"]},
+ {t:"Stories on the shelf",r:["Books, music and films"],k:["Keep the books you love or will read again","Offer favourite books to family and friends","Donate the rest to a library, school or charity","Old magazines can go to recycling"]},
+ {t:"Where you relax and sleep",r:["Living room","Main bedroom","Guest bedroom"],k:["Decide which furniture will fit your next home","Sort ornaments and keep your favourites","Clear the bedrooms of stored extras","Measure the pieces you are keeping (see Will it fit?)"]},
+ {t:"Papers and post",r:["Home office","Paperwork"],k:["Put important papers in one folder","Check how long you must keep tax and bank records where you live","Shred old papers that show your name, address or account details","Sort cables and old electronics for recycling"]},
+ {t:"Outside spaces",r:["Garage","Garden and shed"],k:["Keep the tools you still use","Take old paint, chemicals and batteries to a local recycling or waste point. Check your council's rules","Sell or donate sports and garden equipment","Ask for help to lift anything heavy"]},
+ {t:"Out of sight",r:["Hobbies and crafts","Seasonal and holiday decor","Attic, loft or storage","Basement or storage unit"]
+  ,k:["Finish, give away or let go of unfinished projects","Keep one box of favourite decorations","Return things you are storing for other people","Use steps safely and never climb into the loft alone"]},
+ {t:"Treasures and childhood",r:["Collections","Children's old rooms"],k:["Ask family which treasures they would truly like","Get valuable items checked by an expert before you sell","Offer school work and trophies back to your children","Take photos of things you let go"]},
+ {t:"Memories to keep",r:["Photos and keepsakes"],k:["Choose your favourite photos and letters","Write names and dates on the back of special photos","Ask someone to help scan photos onto a computer or phone","Fill one memory box to keep close"]}
+];
+function gmStart(){if(!S.gm.start){var d=new Date();S.gm.start=d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2);save()}return S.gm.start}
+function gmMonthDate(i){var p=gmStart().split("-");return new Date(+p[0],+p[1]-1+i,1)}
+function gmMonthName(i){return gmMonthDate(i).toLocaleDateString(undefined,{month:"long",year:"numeric"})}
+function gmNow(){var p=gmStart().split("-"),n=new Date();var i=(n.getFullYear()-+p[0])*12+(n.getMonth()-(+p[1]-1));return Math.max(0,Math.min(11,i))}
+function gmDone(i){return GM[i].k.filter(function(k,j){return S.gm.done["m"+i+"_"+j]}).length}
+function gmMonths(){var c=0;GM.forEach(function(m,i){if(gmDone(i)===m.k.length)c++});return c}
+function roomByName(n){for(var i=0;i<S.rooms.length;i++)if(S.rooms[i].name===n)return S.rooms[i]}
+
+function vGentle(){
+  var now=gmNow(),open=planMonth==null?now:planMonth,m=GM[open],dn=gmDone(open);
+  return '<h2 style="margin-top:16px">Gentle 12-month plan</h2><p class="lead">One small area each month, from easiest to hardest. No moving date needed. If a month gets busy, simply carry on next month.</p>'+
+   '<div class="card"><p style="margin-top:0">Your plan starts in <b>'+gmMonthName(0)+'</b> and ends in <b>'+gmMonthName(11)+'</b>.</p>'+
+   '<div class="grid g2 no-print"><button class="btn ghost small" data-act="gmstart" data-v="-1">← Start a month earlier</button><button class="btn ghost small" data-act="gmstart" data-v="1">Start a month later →</button></div>'+
+   '<div class="bar" role="progressbar" aria-label="Months finished" aria-valuemin="0" aria-valuemax="12" aria-valuenow="'+gmMonths()+'" style="margin-top:16px"><i style="width:'+Math.round(gmMonths()/12*100)+'%"></i></div><p style="margin:0"><b>'+gmMonths()+' of 12</b> months finished</p></div>'+
+   '<div class="card hero"><p class="muted" style="margin:0">Month '+(open+1)+' of 12 &middot; '+gmMonthName(open)+(open===now?' &middot; <b>this month</b>':'')+'</p><h3 style="margin-top:4px">'+m.t+'</h3>'+
+   '<p style="margin:0 0 8px">'+m.r.join(", ")+'</p><p class="muted" style="margin:0">'+dn+' of '+m.k.length+' done</p>'+
+   m.k.map(function(k,j){var id="m"+open+"_"+j,on=!!S.gm.done[id];return '<button class="task" data-act="gmtask" data-v="'+id+'" aria-pressed="'+on+'"><span class="box" aria-hidden="true">'+(on?"✓":"")+'</span><span class="tt">'+k+'</span></button>'}).join("")+
+   '<div class="grid g2 no-print" style="margin-top:14px">'+m.r.map(function(n){var r=roomByName(n);return r?'<button class="btn ghost" data-act="open" data-v="'+r.id+'">Open '+esc(n)+'</button>':''}).join("")+'</div></div>'+
+   '<h3 class="no-print">All 12 months</h3><div class="tool-list no-print">'+GM.map(function(g,i){var d=gmDone(i),full=d===g.k.length;
+     return '<button class="tool" data-act="gmmonth" data-v="'+i+'"'+(i===open?' style="border-color:var(--accent)"':'')+'><span class="ic" aria-hidden="true">'+(full?"✅":(i===now?"\u{1F449}":"\u{1F4C6}"))+'</span><span><b>'+gmMonthName(i)+'</b><span class="muted">'+g.t+'</span><br><span class="tag'+(full?" done":"")+'" style="margin-top:6px">'+(full?"Finished":d+" of "+g.k.length+" done")+'</span></span></button>'}).join("")+'</div>';
+}
+
+function rPlan(){
+  var el=$("p-plan");
+  if(!planView){
+    var tc=tlCount(),gifts=allItems().filter(function(x){return x.it.dec==="gift"}),given=gifts.filter(function(x){return x.it.given}).length;
+    var sold=allItems().filter(function(x){return x.it.dec==="sell"&&x.it.sold}).length;
+    var sub={gentle:gmMonths()+" of 12 months finished",timeline:tc[0]+" of "+tc[1]+" done",fit:plural(S.fit.length,"room")+" measured",gifts:given+" of "+gifts.length+" handed over",sales:plural(sold,"thing")+" sold",helpers:plural(S.helpers.length,"helper")+" saved"};
+    el.innerHTML='<h2>My plan</h2><p class="lead">Helpful tools for the move itself. Use only the ones you need.</p><div class="tool-list">'+
+      TOOLS.map(function(t){return '<button class="tool" data-act="tool" data-v="'+t[0]+'"><span class="ic" aria-hidden="true">'+t[1]+'</span><span><b>'+t[2]+'</b><span class="muted">'+t[3]+'</span><br><span class="tag" style="margin-top:6px">'+sub[t[0]]+'</span></span></button>'}).join("")+'</div>';
+    return;
+  }
+  var back='<button class="btn ghost small no-print" data-act="tool" data-v="">← Back to My plan</button>';
+  el.innerHTML=back+({gentle:vGentle,timeline:vTimeline,fit:vFit,gifts:vGifts,sales:vSales,helpers:vHelpers})[planView]();
+}
+
+function vTimeline(){
+  var tc=tlCount(),pct=Math.round(tc[0]/tc[1]*100);
+  return '<h2 style="margin-top:16px">Moving timeline</h2><p class="lead">Tick each job when it is done. The weeks are a guide, not a rule. Go at the pace that suits you.</p>'+
+   '<div class="card">'+(S.date?'<p style="margin-top:0">Your moving date: <b>'+fmtDate(S.date)+'</b></p>':'<label class="lbl" for="tlDate">Add your moving date to see the date for each step</label>')+
+   '<input id="tlDate" type="date" data-s="date" value="'+esc(S.date)+'" aria-label="Moving date">'+
+   '<div class="bar" role="progressbar" aria-label="Timeline done" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" style="margin-top:16px"><i style="width:'+pct+'%"></i></div><p style="margin:0"><b>'+tc[0]+' of '+tc[1]+'</b> jobs done</p></div>'+
+   '<div class="tip"><p><b>\u{1F4AA} Lift safely</b></p><p>Pack heavy things in small boxes. Lift close to your body and do not twist. Ask for help with anything heavy or awkward.</p>'+
+   '<p class="src">For reference: UK workplace guidance (HSE, INDG143) uses up to 25 kg (55 lb) for men and 16 kg (35 lb) for women, held close to the body at waist height. The limits are lower when the load is held further away or lifted from the floor. At home, aim well below these limits.</p></div>'+
+   TL.map(function(p){var done=p.k.filter(function(k){return S.tl[k[0]]}).length;
+     return '<div class="phase"><h3>'+p.t+(S.date?'<small>'+(p.d>0?"by ":p.d<0?"from ":"")+dueOn(p.d)+'</small>':'')+'</h3><p class="muted" style="margin:0">'+done+' of '+p.k.length+' done</p>'+
+     p.k.map(function(k){var on=!!S.tl[k[0]];return '<button class="task" data-act="task" data-v="'+k[0]+'" aria-pressed="'+on+'"><span class="box" aria-hidden="true">'+(on?"✓":"")+'</span><span class="tt">'+k[1]+'</span></button>'}).join("")+'</div>'}).join("");
+}
+
+function vFit(){
+  var u=S.unit==="in"?"in":"cm";
+  return '<h2 style="margin-top:16px">Will it fit?</h2><p class="lead">Measure each room in your next home, then add your furniture. The planner checks if each piece fits the floor.</p>'+
+   '<div class="card no-print"><span class="lbl">Measure in</span><div class="choice grid g3">'+[["cm","Centimetres"],["in","Inches"]].map(function(x){return '<button data-act="unit" data-v="'+x[0]+'" aria-pressed="'+(S.unit===x[0])+'">'+x[1]+'</button>'}).join("")+'</div></div>'+
+   '<div class="card no-print"><h3>Add a room in your next home</h3><div role="group" data-form="fitroom">'+
+   '<div class="field"><label class="lbl" for="frName">Room name</label><input id="frName" type="text" placeholder="e.g. Lounge"></div>'+
+   '<div class="inrow"><div class="field"><label class="lbl" for="frL">Length ('+u+')</label><input id="frL" type="text" inputmode="decimal"></div><div class="field"><label class="lbl" for="frW">Width ('+u+')</label><input id="frW" type="text" inputmode="decimal"></div></div>'+
+   '<button class="btn wide" type="button" data-act="submit">Add this room</button></div></div>'+
+   (S.fit.length?S.fit.map(function(r){
+     var used=r.pieces.reduce(function(a,pc){return a+pc.l*pc.w},0),pct=Math.round(used/(r.l*r.w)*100);
+     return '<div class="card"><div class="item-top"><h3 style="flex:1">'+esc(r.name)+'</h3><button class="linkbtn no-print" data-act="delfit" data-v="'+r.id+'">Remove</button></div>'+
+     '<p style="margin-top:0">'+fmtLen(r.l)+' by '+fmtLen(r.w)+'<br><span class="muted">Floor: '+fmtArea(r.l,r.w)+'</span></p>'+
+     (r.pieces.length?r.pieces.map(function(pc){var ok=fits(r,pc);return '<div class="row"><div><b>'+esc(pc.name)+'</b><div class="muted" style="font-size:.9rem">'+fmtLen(pc.l)+' by '+fmtLen(pc.w)+'</div></div><div>'+(ok?'<span class="fitok">✓ Fits</span>':'<span class="fitno">✗ Too big for this room</span>')+' <button class="linkbtn no-print" data-act="delpiece" data-id="'+r.id+'" data-v="'+pc.id+'" aria-label="Remove '+esc(pc.name)+'">Remove</button></div></div>'}).join("")+
+       '<p><b>Furniture covers '+pct+'% of the floor.</b></p>':'<p class="muted">No furniture added yet.</p>')+
+     '<div role="group" class="no-print" data-form="piece" data-id="'+r.id+'" style="margin-top:12px;border-top:2px solid var(--line);padding-top:14px"><div class="field"><label class="lbl" for="pn-'+r.id+'">Add furniture for this room</label><input id="pn-'+r.id+'" type="text" placeholder="e.g. Sofa"></div>'+
+     '<div class="inrow"><div class="field"><label class="lbl" for="pl-'+r.id+'">Length ('+u+')</label><input id="pl-'+r.id+'" type="text" inputmode="decimal"></div><div class="field"><label class="lbl" for="pw-'+r.id+'">Depth ('+u+')</label><input id="pw-'+r.id+'" type="text" inputmode="decimal"></div></div>'+
+     '<button class="btn ghost wide" type="button" data-act="submit">Add furniture</button></div></div>'}).join(""):'')+
+   '<div class="tip"><p><b>\u{1F6B6} Leave room to walk</b></p><p>Keep clear paths between furniture, so you can move about safely with a walker, or carry a tray.</p>'+
+   '<p class="src">For reference: the US ADA Standards for Accessible Design (section 403.5.1) set 915 mm (36 in) as the minimum clear width of walking surfaces on an accessible route. Wider is better.</p>'+
+   '<p>Also measure doorways, hallways, stairs and any lift. A piece that fits the room still has to get through the door.</p></div>';
+}
+
+function vGifts(){
+  var g=allItems().filter(function(x){return x.it.dec==="gift"}),by={},order=[];
+  g.forEach(function(x){var w=(x.it.who||"").trim()||"Not chosen yet";if(!by[w]){by[w]=[];order.push(w)}by[w].push(x)});
+  var given=g.filter(function(x){return x.it.given}).length;
+  return '<h2 style="margin-top:16px">Family gifts</h2><p class="lead">Everything you chose to "Give to family", grouped by person. A quick question first saves hurt feelings later.</p>'+
+   (g.length?'<div class="card"><p class="total" style="margin:0"><b>'+given+' of '+g.length+'</b> handed over</p></div>'+
+   order.map(function(w){return '<div class="card"><h3>'+esc(w)+'</h3>'+by[w].map(function(x){
+     return '<div class="row" style="display:block"><b>'+esc(x.it.name)+'</b><div class="muted" style="font-size:.9rem">'+esc(x.room.name)+(x.it.note?' &middot; '+esc(x.it.note):'')+'</div>'+
+     '<p class="print-only">'+(x.it.asked?"Asked: yes":"Asked: not yet")+' &middot; '+(x.it.given?"Handed over":"Not handed over yet")+'</p>'+
+     '<div class="toggles"><button data-act="flag" data-id="'+x.it.id+'" data-v="asked" aria-pressed="'+!!x.it.asked+'">'+(x.it.asked?"✓ I asked them":"I asked them")+'</button><button data-act="flag" data-id="'+x.it.id+'" data-v="given" aria-pressed="'+!!x.it.given+'">'+(x.it.given?"✓ Handed over":"Handed over")+'</button></div></div>'}).join("")+'</div>'}).join("")+
+   '<button class="btn ghost wide no-print" data-act="print">Print the gift list</button>'
+   :'<div class="empty">No gifts yet. In any room, tap "Give to family" on an item and type who it is for.</div>');
+}
+
+function vSales(){
+  var sell=allItems().filter(function(x){return x.it.dec==="sell"}),don=allItems().filter(function(x){return x.it.dec==="donate"});
+  var total=sell.filter(function(x){return x.it.sold}).reduce(function(a,x){return a+money(x.it.soldFor||x.it.price)},0);
+  return '<h2 style="margin-top:16px">Selling and donating</h2><p class="lead">Keep track of prices, what has sold and what has gone.</p>'+
+   '<div class="card no-print"><label class="lbl" for="sCur">Your money sign (you can leave this empty)</label><input id="sCur" type="text" data-s="cur" value="'+esc(S.cur)+'" placeholder="e.g. $, £, €, R" style="max-width:220px"></div>'+
+   '<div class="card"><h3>\u{1F3F7}️ To sell ('+sell.length+')</h3>'+(sell.length?'<p class="total" style="margin-top:0">Money raised so far: <b>'+fmtMoney(total)+'</b></p>'+
+   sell.map(function(x){var it=x.it;return '<div class="row" style="display:block"><b>'+esc(it.name)+'</b><div class="muted" style="font-size:.9rem">'+esc(x.room.name)+(it.who?' &middot; '+esc(it.who):'')+'</div>'+
+     '<div class="inrow" style="margin-top:10px"><div><label class="lbl" for="pr-'+it.id+'">Asking price</label><input id="pr-'+it.id+'" type="text" inputmode="decimal" data-f="price" data-id="'+it.id+'" value="'+esc(it.price)+'"></div>'+
+     (it.sold?'<div><label class="lbl" for="sf-'+it.id+'">Sold for</label><input id="sf-'+it.id+'" type="text" inputmode="decimal" data-f="soldFor" data-id="'+it.id+'" value="'+esc(it.soldFor)+'"></div>':'<div></div>')+'</div>'+
+     '<p class="print-only">'+(it.sold?"Sold":"Not sold yet")+'</p>'+
+     '<div class="toggles" style="grid-template-columns:1fr"><button data-act="flag" data-id="'+it.id+'" data-v="sold" aria-pressed="'+!!it.sold+'">'+(it.sold?"✓ Sold":"Mark as sold")+'</button></div></div>'}).join("")
+   :'<div class="empty">Nothing to sell yet. Tap "Sell" on any item in a room.</div>')+'</div>'+
+   '<div class="card"><h3>\u{1F49D} To donate ('+don.length+')</h3>'+(don.length?don.map(function(x){var it=x.it;return '<div class="row" style="display:block"><b>'+esc(it.name)+'</b><div class="muted" style="font-size:.9rem">'+esc(x.room.name)+(it.who?' &middot; to '+esc(it.who):'')+'</div>'+
+     '<p class="print-only">'+(it.gone?"Gone":it.booked?"Collection booked":"Not booked yet")+'</p>'+
+     '<div class="toggles"><button data-act="flag" data-id="'+it.id+'" data-v="booked" aria-pressed="'+!!it.booked+'">'+(it.booked?"✓ Booked":"Collection booked")+'</button><button data-act="flag" data-id="'+it.id+'" data-v="gone" aria-pressed="'+!!it.gone+'">'+(it.gone?"✓ Gone":"It has gone")+'</button></div></div>'}).join("")
+   :'<div class="empty">Nothing to donate yet. Tap "Donate" on any item in a room.</div>')+'</div>';
+}
+
+var ROLES=["Family","Friend","Removal company","Charity","Buyer","Cleaner","Other"];
+function vHelpers(){
+  return '<h2 style="margin-top:16px">My helpers</h2><p class="lead">Everyone helping with your move, in one place. On a phone, tap "Call" to ring them.</p>'+
+   '<div class="card no-print"><h3>Add a helper</h3><div role="group" data-form="helper">'+
+   '<div class="field"><label class="lbl" for="hName">Name</label><input id="hName" type="text" placeholder="e.g. Sam (my nephew)"></div>'+
+   '<div class="field"><span class="lbl">Who are they?</span><div class="choice grid g3">'+ROLES.map(function(r){return '<button type="button" data-act="role" data-v="'+r+'" aria-pressed="'+(helperRole===r)+'">'+r+'</button>'}).join("")+'</div></div>'+
+   '<div class="field"><label class="lbl" for="hPhone">Phone number</label><input id="hPhone" type="tel" inputmode="tel" style="width:100%;min-height:56px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:var(--surface)"></div>'+
+   '<button class="btn wide" type="button" data-act="submit">Save this helper</button></div></div>'+
+   (S.helpers.length?S.helpers.map(function(h){var tel=String(h.phone||"").replace(/[^0-9+]/g,"");
+     return '<div class="card"><div class="item-top"><div style="flex:1"><h3 style="margin:0">'+esc(h.name)+'</h3><span class="tag">'+esc(h.role)+'</span></div><button class="linkbtn no-print" data-act="delhelper" data-v="'+h.id+'">Remove</button></div>'+
+     (h.phone?'<p style="font-size:1.15rem;margin:10px 0"><b>'+esc(h.phone)+'</b></p>'+(tel?'<a class="btn wide no-print" href="tel:'+esc(tel)+'">\u{1F4DE} Call '+esc(h.name)+'</a>':''):'')+
+     '<div class="field" style="margin:12px 0 0"><label class="lbl" for="hn-'+h.id+'">Notes</label><input id="hn-'+h.id+'" type="text" data-h="note" data-id="'+h.id+'" value="'+esc(h.note)+'" placeholder="e.g. Coming Saturday 9am with his van"></div></div>'}).join("")
+   :'<div class="empty">No helpers saved yet.</div>');
+}
+
+/* Actions */
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");if(!b)return;
+  var a=b.dataset.act,v=b.dataset.v,id=b.dataset.id,x;
+  if(a==="tab"){if(v==="rooms")openRoom=null;if(v==="plan")planView=null;go(v)}
+  else if(a==="open"){openRoom=v;go("rooms")}
+  else if(a==="back"){openRoom=null;render();window.scrollTo(0,0)}
+  else if(a==="filter"){roomFilter=v;render()}
+  else if(a==="list"){listDec=v;render()}
+  else if(a==="submit"){doForm(b.closest("[data-form]"))}
+  else if(a==="print"){window.print()}
+  else if(a==="tool"){planView=v||null;planMonth=null;render();window.scrollTo(0,0)}
+  else if(a==="task"){S.tl[v]=!S.tl[v];save();render()}
+  else if(a==="unit"){S.unit=v;save();render()}
+  else if(a==="flag"){x=findItem(id);if(!x)return;x.it[v]=!x.it[v];save();render()}
+  else if(a==="role"){helperRole=v;[].forEach.call(document.querySelectorAll("[data-act=role]"),function(r){r.setAttribute("aria-pressed",r.dataset.v===v)})}
+  else if(a==="delfit"){var fi=S.fit.indexOf(fitRoom(v)),fr=S.fit[fi];S.fit.splice(fi,1);save();render();toast("Removed "+fr.name,function(){S.fit.splice(fi,0,fr);save();render()})}
+  else if(a==="delpiece"){var R=fitRoom(id),pi=-1;R.pieces.forEach(function(pc,i){if(pc.id===v)pi=i});var pc=R.pieces.splice(pi,1)[0];save();render();toast("Removed "+pc.name,function(){R.pieces.splice(pi,0,pc);save();render()})}
+  else if(a==="delhelper"){var hi=-1;S.helpers.forEach(function(h,i){if(h.id===v)hi=i});var hh=S.helpers.splice(hi,1)[0];save();render();toast("Removed "+hh.name,function(){S.helpers.splice(hi,0,hh);save();render()})}
+  else if(a==="opentl"){tab="plan";planView="timeline";go("plan")}
+  else if(a==="opengm"){planView="gentle";planMonth=null;go("plan")}
+  else if(a==="gmtask"){S.gm.done[v]=!S.gm.done[v];save();render()}
+  else if(a==="gmmonth"){planMonth=+v;render();window.scrollTo(0,0)}
+  else if(a==="gmstart"){var d=gmMonthDate(+v);S.gm.start=d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2);planMonth=null;save();render()}
+  else if(a==="size"){S.size=S.size>=2?0:S.size+1;save();render()}
+  else if(a==="setsize"){S.size=+v;save();render()}
+  else if(a==="theme"){S.theme=v;save();render()}
+  else if(a==="mode"){S.mode=v;save();render()}
+  else if(a==="dec"){x=findItem(id);if(!x)return;var was=x.it.dec;x.it.dec=v;
+    if(v==="undecided"&&!x.it.review)x.it.review=addDays(30);
+    if(v!=="undecided")x.it.review="";
+    if(x.room.status==="not")x.room.status="prog";
+    save();render();if(tab==="unsure")toast("Done: "+decOf(v).l,function(){x.it.dec=was;save();render()})}
+  else if(a==="review"){x=findItem(id);if(!x)return;x.it.review=addDays(+v);save();render();toast("Reminder set for "+fmtDate(x.it.review))}
+  else if(a==="del"){x=findItem(id);if(!x)return;var idx=x.room.items.indexOf(x.it);x.room.items.splice(idx,1);save();render();
+    toast("Removed "+x.it.name,function(){x.room.items.splice(idx,0,x.it);save();render()})}
+  else if(a==="status"){var r=room(openRoom);r.status=v;save();render();if(v==="done"){toast("Room finished. Well done!");}}
+  else if(a==="delroom"){var ri=S.rooms.indexOf(room(v)),rm=S.rooms[ri];S.rooms.splice(ri,1);openRoom=null;save();render();
+    toast("Removed "+rm.name,function(){S.rooms.splice(ri,0,rm);save();render()})}
+  else if(a==="export"){
+    var blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),l=document.createElement("a");
+    l.href=URL.createObjectURL(blob);l.download="downsizing-planner-copy-"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(l.href);l.remove()},500);toast("Copy saved to your device")}
+  else if(a==="import"){$("importFile").click()}
+  else if(a==="reset"){ask("Empty the whole planner? This cannot be undone.","Yes, empty it",function(){
+    var keep={theme:S.theme,size:S.size};S=fresh();fill();S.theme=keep.theme;S.size=keep.size;openRoom=null;planView=null;save();go("home");toast("Your planner is empty and ready")})}
+});
+function doForm(box){
+  if(!box)return;var f=box.dataset.form,e={target:box};
+  if(f==="item"){var v=$("newItem").value.trim();if(!v)return;var r=room(openRoom);
+    r.items.push({id:uid(),name:v.slice(0,120),dec:"",who:"",note:"",review:""});if(r.status==="not")r.status="prog";
+    save();render();$("newItem").focus();toast("Added. Now choose what to do with it.")}
+  if(f==="fitroom"){var nm=$("frName").value.trim(),L=toCm($("frL").value),W=toCm($("frW").value);
+    if(!nm||!L||!W){toast("Please add a name, length and width");return}
+    S.fit.push({id:uid(),name:nm.slice(0,60),l:L,w:W,pieces:[]});save();render();toast("Room added. Now add your furniture.")}
+  if(f==="piece"){var R=fitRoom(e.target.dataset.id),pn=$("pn-"+R.id).value.trim(),pl=toCm($("pl-"+R.id).value),pw=toCm($("pw-"+R.id).value);
+    if(!pn||!pl||!pw){toast("Please add a name, length and depth");return}
+    R.pieces.push({id:uid(),name:pn.slice(0,60),l:pl,w:pw});save();render();var ok=fits(R,R.pieces[R.pieces.length-1]);toast(ok?pn+" fits":pn+" is too big for this room");var ni=$("pn-"+R.id);if(ni)ni.focus()}
+  if(f==="helper"){var hn=$("hName").value.trim();if(!hn){toast("Please add a name");return}
+    S.helpers.push({id:uid(),name:hn.slice(0,60),role:helperRole,phone:$("hPhone").value.trim().slice(0,30),note:""});save();render();toast("Helper saved")}
+  if(f==="room"){var n=$("newRoom").value.trim();if(!n)return;var nr={id:uid(),name:n.slice(0,60),hint:"",status:"not",custom:true,items:[]};
+    S.rooms.push(nr);save();openRoom=nr.id;render();window.scrollTo(0,0)}
+}
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Enter"||e.target.tagName!=="INPUT")return;var box=e.target.closest("[data-form]");if(!box)return;e.preventDefault();doForm(box);
+});
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset.f&&t.dataset.id){var x=findItem(t.dataset.id);if(x){x.it[t.dataset.f]=t.value;save()}}
+  if(t.dataset.s){S[t.dataset.s]=t.value;save();if(t.dataset.s==="name")$("subtitle").textContent=S.name||"On my terms"}
+  if(t.dataset.h&&t.dataset.id){S.helpers.forEach(function(h){if(h.id===t.dataset.id)h[t.dataset.h]=t.value});save()}
+});
+document.addEventListener("change",function(e){
+  if(e.target.id==="tlDate"||(e.target.dataset.f==="soldFor"||e.target.dataset.f==="price")){render();return}
+  if(e.target.id!=="importFile")return;var file=e.target.files[0];if(!file)return;var rd=new FileReader();
+  rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d||!Array.isArray(d.rooms))throw 0;
+    ask("Replace what is in this planner with your saved copy?","Yes, bring it back",function(){S=d;fill();planView=null;openRoom=null;save();render();toast("Your saved copy is back")})}catch(err){toast("Sorry, that file is not a saved copy from this planner.")}};
+  rd.readAsText(file);e.target.value="";
+});
+
+render();
+})();
+</script>
+</body>
+</html>
